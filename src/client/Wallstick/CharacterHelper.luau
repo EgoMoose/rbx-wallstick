@@ -14,13 +14,18 @@ local STRIP: { [string]: boolean } = {
 	["Attachment"] = true,
 }
 
-export type RealCharacter = {
+type BaseCharacter = {
 	character: Model,
 	rootPart: BasePart,
 	humanoid: Humanoid,
 }
 
-export type FakeCharacter = RealCharacter & {
+export type RealCharacter = BaseCharacter & {
+	alignPosition: AlignPosition,
+	alignOrientation: AlignOrientation,
+}
+
+export type FakeCharacter = BaseCharacter & {
 	alignOrientation: AlignOrientation,
 }
 
@@ -109,7 +114,32 @@ end
 
 function CharacterHelper.real(player: Player): RealCharacter
 	local character = getCharacter(player)
-	return packageCharacter(character)
+	local packaged = packageCharacter(character) :: RealCharacter
+
+	local rootAttach = packaged.rootPart:WaitForChild("RootAttachment") :: Attachment
+
+	local alignPosition = Instance.new("AlignPosition")
+	alignPosition.Enabled = true
+	alignPosition.MaxVelocity = 10_000_000
+	alignPosition.Responsiveness = 200
+	alignPosition.Position = Vector3.zero
+	alignPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
+	alignPosition.Attachment0 = rootAttach
+	alignPosition.Parent = packaged.rootPart
+
+	local alignOrientation = Instance.new("AlignOrientation")
+	alignOrientation.Enabled = true
+	alignOrientation.MaxTorque = 10_000_000
+	alignOrientation.Responsiveness = 200
+	alignOrientation.CFrame = CFrame.identity
+	alignOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
+	alignOrientation.Attachment0 = rootAttach
+	alignOrientation.Parent = packaged.rootPart
+
+	packaged.alignPosition = alignPosition
+	packaged.alignOrientation = alignOrientation
+
+	return packaged
 end
 
 function CharacterHelper.fake(player: Player): FakeCharacter
@@ -117,6 +147,7 @@ function CharacterHelper.fake(player: Player): FakeCharacter
 	local packaged = packageCharacter(character) :: FakeCharacter
 
 	local rootAttach = packaged.rootPart:WaitForChild("RootAttachment") :: Attachment
+
 	local alignOrientation = Instance.new("AlignOrientation")
 	alignOrientation.Enabled = false
 	alignOrientation.MaxTorque = 10_000_000

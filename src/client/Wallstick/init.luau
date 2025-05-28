@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SharedPackages = ReplicatedStorage.SharedPackages
 local Trove = require(SharedPackages.Trove)
 
+local Replication = require(script.Replication)
 local GravityCamera = require(script.GravityCamera)
 local RotationSpring = require(script.RotationSpring)
 local CharacterHelper = require(script.CharacterHelper)
@@ -51,6 +52,7 @@ export type Wallstick = typeof(setmetatable(
 
 		options: Options,
 		fallStartHeight: number,
+		replicateTick: number,
 
 		part: BasePart,
 		normal: Vector3,
@@ -75,6 +77,7 @@ function WallstickClass.new(options: Options): Wallstick
 
 	self.options = table.clone(options)
 	self.fallStartHeight = -1
+	self.replicateTick = -1
 
 	self.part = workspace.Terrain
 	self.normal = Vector3.yAxis
@@ -94,7 +97,7 @@ function WallstickClass.new(options: Options): Wallstick
 	self.trove:Add(CharacterHelper.applyCollisionGroup(self.real.character, "WallstickNoCollision"))
 
 	self.real.humanoid.EvaluateStateMachine = false
-	self.real.rootPart.Anchored = true
+	self.real.rootPart.Anchored = false
 
 	self.fake.character.Parent = self.options.parent
 	self.trove:Add(self.fake.character)
@@ -231,6 +234,18 @@ function WallstickClass._updateCollisionGeometry(self: Wallstick)
 	end
 end
 
+function WallstickClass._trySendReplication(self: Wallstick, force: boolean)
+	local t = os.clock()
+	if force or t - self.replicateTick >= Replication.REPLICATE_DEBOUNCE_TIME then
+		self.replicateTick = t
+
+		local realRootCFrame = self:_getCalculatedRealRootCFrame()
+		local offset = self.part.CFrame:ToObjectSpace(realRootCFrame)
+
+		Replication.send(self.part, offset)
+	end
+end
+
 function WallstickClass._stepRenderBeforeCamera(self: Wallstick, dt: number)
 	if self.options.camera.tilt then
 		self.cameraUpSpring:step(dt)
@@ -267,9 +282,13 @@ function WallstickClass._stepPhysics(self: Wallstick, _dt: number)
 	end
 
 	local realRootCFrame = self:_getCalculatedRealRootCFrame()
+
 	self.real.rootPart.CFrame = realRootCFrame
+	self.real.alignPosition.Position = realRootCFrame.Position
+	self.real.alignOrientation.CFrame = realRootCFrame
 
 	self:_updateCollisionGeometry()
+	self:_trySendReplication(false)
 end
 
 -- Public
@@ -293,7 +312,8 @@ function WallstickClass.getFallDistance(self: Wallstick)
 end
 
 function WallstickClass.set(self: Wallstick, part: BasePart, normal: Vector3, teleportCF: CFrame?)
-	local prevPartCF = self.part.CFrame
+	local prevPart = self.part
+	local prevPartCF = prevPart.CFrame
 	local worldUpCFrame = prevPartCF:ToWorldSpace(self.cameraUpSpring:getPosition())
 	local worldUpVelocity = prevPartCF:VectorToWorldSpace(self.cameraUpSpring:getVelocity())
 
@@ -335,6 +355,10 @@ function WallstickClass.set(self: Wallstick, part: BasePart, normal: Vector3, te
 	self.fallStartHeight = fakeRoot.Position.Y
 
 	self:_updateCollisionGeometry()
+
+	if self.part ~= prevPart then
+		self:_trySendReplication(true)
+	end
 end
 
 function WallstickClass.setAndPivot(self: Wallstick, part: BasePart, normal: Vector3, position: Vector3)

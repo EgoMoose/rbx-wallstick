@@ -8,6 +8,20 @@ local SharedPackages = ReplicatedStorage.SharedPackages
 local RaycastHelper = require(SharedPackages.RaycastHelper)
 
 local WallstickClass = require(ReplicatedStorage.Wallstick)
+local Replication = require(ReplicatedStorage.Wallstick.Replication)
+
+local function ignoreCharacterParts(result: RaycastResult)
+	local hit = result.Instance :: BasePart
+	local accessory = hit:FindFirstAncestorWhichIsA("Accessory")
+
+	local character = (accessory or hit).Parent
+	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
+	if character and humanoid then
+		return not (accessory or humanoid:GetLimb(hit))
+	end
+
+	return true
+end
 
 local function onCharacterAdded(character: Model)
 	local wallstick = WallstickClass.new({
@@ -23,16 +37,16 @@ local function onCharacterAdded(character: Model)
 	local humanoid = character and character:WaitForChild("Humanoid") :: Humanoid
 	local hrp = humanoid and humanoid.RootPart :: BasePart
 
+	local rayParams = RaycastHelper.params({
+		filterType = Enum.RaycastFilterType.Exclude,
+		instances = { character :: Instance },
+	})
+
 	local simulationConnection = RunService.PreSimulation:Connect(function(_dt)
 		if wallstick:getFallDistance() < -50 then
 			wallstick:set(workspace.Terrain, Vector3.yAxis)
 			return
 		end
-
-		local rayParams = RaycastHelper.params({
-			filterType = Enum.RaycastFilterType.Exclude,
-			instances = { character :: Instance },
-		})
 
 		local hipHeight = humanoid.HipHeight
 		if humanoid.RigType == Enum.HumanoidRigType.R6 then
@@ -43,6 +57,7 @@ local function onCharacterAdded(character: Model)
 		local result = RaycastHelper.raycast({
 			origin = hrpCF.Position,
 			direction = -(hipHeight + hrp.Size.Y / 2 + 0.1) * hrpCF.YVector,
+			filter = ignoreCharacterParts,
 			rayParams = rayParams,
 		})
 
@@ -66,3 +81,5 @@ if Players.LocalPlayer.Character then
 end
 
 Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+Replication.listenClient()
