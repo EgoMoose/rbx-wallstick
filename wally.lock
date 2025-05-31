@@ -20,7 +20,7 @@ dependencies = []
 [[package]]
 name = "egomoose/rbx-wallstick"
 version = "0.1.0"
-dependencies = [["CharacterAnimate", "egomoose/character-animate@0.0.3"], ["CharacterSounds", "egomoose/character-sounds@0.2.1"], ["RaycastHelper", "egomoose/raycast-helper@3.0.0"], ["Trove", "sleitnick/trove@1.5.0"], ["TypedRemote", "sleitnick/typed-remote@0.2.0"], ["PlayerModule", "upliftgames/playermodule@672.0.6720706"]]
+dependencies = [["CharacterAnimate", "egomoose/character-animate@0.0.3"], ["CharacterSounds", "egomoose/character-sounds@0.2.1"], ["RaycastHelper", "egomoose/raycast-helper@3.0.0"], ["Trove", "sleitnick/trove@1.5.0"], ["TypedRemote", "sleitnick/typed-remote@0.2.0"], ["PlayerModule", "upliftgames/playermodule@675.1.6750723"]]
 
 [[package]]
 name = "sleitnick/trove"
@@ -39,5 +39,5 @@ dependencies = []
 
 [[package]]
 name = "upliftgames/playermodule"
-version = "672.0.6720706"
+version = "675.1.6750723"
 dependencies = []

@@ -16,4 +16,4 @@ CharacterSounds = "egomoose/character-sounds@0.2.1"
 CharacterAnimate = "egomoose/character-animate@0.0.3"
 
 [server-dependencies]
-PlayerModule = "upliftgames/playermodule@672.0.6720706"
+PlayerModule = "upliftgames/playermodule@675.1.6750723"
