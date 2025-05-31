@@ -3,6 +3,7 @@
 local PhysicsService = game:GetService("PhysicsService") :: PhysicsService
 
 local PlayerScripts = require(script.PlayerScripts)
+local Replication = require(game.ReplicatedStorage.Wallstick.Replication)
 
 -- Private
 
@@ -20,9 +21,11 @@ end
 
 --
 
-local folder = Instance.new("Folder")
-folder.Name = "Wallstick"
-folder.Parent = workspace
+local wallstickFolder = Instance.new("Folder")
+wallstickFolder.Name = "Wallstick"
+wallstickFolder.Parent = workspace
 
 PlayerScripts.setup()
 setupCollisions()
+
+Replication.listenServer()
