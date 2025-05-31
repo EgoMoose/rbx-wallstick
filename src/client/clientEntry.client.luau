@@ -17,7 +17,7 @@ local function ignoreCharacterParts(result: RaycastResult)
 	local character = (accessory or hit).Parent
 	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
 	if character and humanoid then
-		return not (accessory or humanoid:GetLimb(hit))
+		return not (accessory or humanoid:GetLimb(hit) ~= Enum.Limb.Unknown)
 	end
 
 	return true
