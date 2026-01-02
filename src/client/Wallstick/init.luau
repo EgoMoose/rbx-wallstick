@@ -98,7 +98,7 @@ function WallstickClass.new(options: Options): Wallstick
 
 	self.trove:Add(CharacterHelper.applyCollisionGroup(self.real.character, "WallstickNoCollision"))
 
-	self.real.humanoid.EvaluateStateMachine = false
+	self.real.humanoid.PlatformStand = true
 	self.real.rootPart.Anchored = false
 
 	self.fake.character.Parent = self.options.parent
