@@ -7,5 +7,4 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "JohnnyMorganz.stylua"
 	},
-	"luau-lsp.require.mode": "relativeToFile",
 }

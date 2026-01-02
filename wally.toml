@@ -9,11 +9,11 @@ private = true
 shared-packages = "game.ReplicatedStorage.SharedPackages"
 
 [dependencies]
-Trove = "sleitnick/trove@1.5.0"
-TypedRemote = "sleitnick/typed-remote@0.2.0"
+Trove = "sleitnick/trove@=1.5.0"
+TypedRemote = "sleitnick/typed-remote@0.3.0"
 RaycastHelper = "egomoose/raycast-helper@3.0.0"
 CharacterSounds = "egomoose/character-sounds@0.2.1"
 CharacterAnimate = "egomoose/character-animate@0.0.3"
 
 [server-dependencies]
-PlayerModule = "upliftgames/playermodule@675.1.6750723"
+PlayerModule = "upliftgames/playermodule@700.0.7000935"
