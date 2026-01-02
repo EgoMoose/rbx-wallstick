@@ -24,9 +24,12 @@ local function ignoreCharacterParts(result: RaycastResult)
 end
 
 local function onCharacterAdded(character: Model)
+	local wallstickModel = workspace:WaitForChild("Wallstick") :: Model
+	local wallstickOrigin = wallstickModel:WaitForChild("Origin") :: BasePart
+
 	local wallstick = WallstickClass.new({
-		parent = workspace:WaitForChild("Wallstick"),
-		origin = CFrame.new(2000, 0, 0),
+		parent = wallstickModel,
+		origin = wallstickOrigin.CFrame,
 		retainWorldVelocity = true,
 		camera = {
 			tilt = true,
@@ -73,8 +76,6 @@ local function onCharacterAdded(character: Model)
 	simulationConnection:Disconnect()
 	wallstick:Destroy()
 end
-
-assert(not workspace.StreamingEnabled, "Wallstick does not support streaming enabled.")
 
 if Players.LocalPlayer.Character then
 	onCharacterAdded(Players.LocalPlayer.Character)
