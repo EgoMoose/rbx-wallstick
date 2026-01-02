@@ -172,6 +172,33 @@ function CharacterHelper.setMyPerformer(real: Model, fake: Model?)
 	animateController.matchAnimate(humanoid)
 end
 
+export type StreamingFocus = {
+	part: BasePart,
+	alignPosition: AlignPosition,
+	alignOrientation: AlignOrientation,
+}
+
+function CharacterHelper.findStreamingFocus(player: Player): StreamingFocus?
+	local wallstickModel = workspace:FindFirstChild("Wallstick")
+	local streamingFoci = wallstickModel and wallstickModel:FindFirstChild("StreamingFoci")
+
+	local streamingFocus = streamingFoci and streamingFoci:FindFirstChild(`StreamingFocus_{player.UserId}`)
+	local alignPosition = streamingFocus and streamingFocus:FindFirstChildWhichIsA("AlignPosition")
+	local alignOrientation = streamingFocus and streamingFocus:FindFirstChildWhichIsA("AlignOrientation")
+
+	print(wallstickModel, streamingFoci, streamingFocus, alignPosition, alignOrientation)
+
+	if streamingFocus and streamingFocus:IsA("BasePart") and alignPosition and alignOrientation then
+		return {
+			part = streamingFocus,
+			alignPosition = alignPosition,
+			alignOrientation = alignOrientation,
+		}
+	end
+
+	return nil
+end
+
 --
 
 return CharacterHelper

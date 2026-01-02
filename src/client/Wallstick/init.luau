@@ -64,6 +64,7 @@ export type Wallstick = typeof(setmetatable(
 
 		real: CharacterHelper.RealCharacter,
 		fake: CharacterHelper.FakeCharacter,
+		streamingFocus: CharacterHelper.StreamingFocus,
 	},
 	WallstickClass
 ))
@@ -93,6 +94,7 @@ function WallstickClass.new(options: Options): Wallstick
 
 	self.real = CharacterHelper.real(Players.LocalPlayer)
 	self.fake = CharacterHelper.fake(Players.LocalPlayer)
+	self.streamingFocus = assert(CharacterHelper.findStreamingFocus(Players.LocalPlayer), "No streaming focus found.")
 
 	self.trove:Add(CharacterHelper.applyCollisionGroup(self.real.character, "WallstickNoCollision"))
 
@@ -140,6 +142,10 @@ function WallstickClass.new(options: Options): Wallstick
 
 		self.real.humanoid.EvaluateStateMachine = true
 		self.real.rootPart.Anchored = false
+
+		self.streamingFocus.part.CFrame = self.options.origin
+		self.streamingFocus.alignPosition.Position = self.options.origin.Position
+		self.streamingFocus.alignOrientation.CFrame = self.options.origin
 	end)
 
 	return self
@@ -259,11 +265,15 @@ end
 
 function WallstickClass._stepRenderCharacter(self: Wallstick, _dt: number)
 	local realRootCF = self:_getCalculatedRealRootCFrame()
+	local fakeRootCF = self.fake.rootPart.CFrame
 	local rootCameraOffset = realRootCF:ToObjectSpace(workspace.CurrentCamera.CFrame)
-	local geometryCameraCF = self.fake.rootPart.CFrame * rootCameraOffset
+	local geometryCameraCF = fakeRootCF * rootCameraOffset
 
 	self.fake.humanoid.Jump = self.real.humanoid.Jump
 	self.fake.humanoid:Move(GravityCamera.getMoveVector(geometryCameraCF), false)
+
+	self.streamingFocus.alignPosition.Position = fakeRootCF.Position
+	self.streamingFocus.alignOrientation.CFrame = fakeRootCF
 
 	if GravityCamera.getRotationType() == Enum.RotationType.CameraRelative then
 		local right = GravityCamera.getMoveVector(geometryCameraCF, Vector3.xAxis)
