@@ -186,8 +186,6 @@ function CharacterHelper.findStreamingFocus(player: Player): StreamingFocus?
 	local alignPosition = streamingFocus and streamingFocus:FindFirstChildWhichIsA("AlignPosition")
 	local alignOrientation = streamingFocus and streamingFocus:FindFirstChildWhichIsA("AlignOrientation")
 
-	print(wallstickModel, streamingFoci, streamingFocus, alignPosition, alignOrientation)
-
 	if streamingFocus and streamingFocus:IsA("BasePart") and alignPosition and alignOrientation then
 		return {
 			part = streamingFocus,
