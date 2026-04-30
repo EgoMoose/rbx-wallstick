@@ -3,6 +3,7 @@
 /Packages
 /assets
 
+/.vscode/settings.json
 *.rbxl.lock
 
 sourcemap.json
